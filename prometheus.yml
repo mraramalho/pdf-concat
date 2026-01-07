@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8082'] # O Traefik expõe métricas nesta porta no seu YAML
+
+  - job_name: 'pdf-merger'
+    static_configs:
+      - targets: ['pdf-merger:8081'] # Se você adicionou o endpoint /internal/metrics no Go
