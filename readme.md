@@ -40,6 +40,10 @@ A aplicação utiliza duas redes distintas:
 
 ### 1. Pré-requisitos
 
+* Um domínio
+* DNS e Resolução de Nomes (vai de cloudflare 😉)
+* Atualização da sua senha do grafana no `docker-compose.yml`
+* Atualização do domínio do Traefik para os serviços no `docker-compose.yml`
 * Docker e Swarm Mode ativo.
 * Rede externa `web` criada:
 ```bash
@@ -47,6 +51,11 @@ docker network create --driver overlay web
 
 ```
 
+* Imagem da aplicação
+
+```bash
+docker build -t pdf-merger:latest .
+```
 
 * Serviço do Traefik rodando com o resolver `letsencryptresolver`.
 
@@ -106,6 +115,23 @@ Para atualizar a imagem da aplicação sem downtime:
 docker service update --image pdf-merger:latest pdf_pdf-merger
 
 ```
+
+Para fazer um atualização da imagem mais agressiva:
+
+```bash
+docker build -t pdf-merger:latest .
+docker stack rm pdf
+docker service update --force traefik_traefik
+docker stack deploy -c docker-compose.yml pdf
+
+```
+
+Para testar se o docker está recebendo requisição
+
+```bash
+docker exec -it $(docker ps -qf name=traefik_traefik) wget -qO- http://pdf_pdf-merger:8081
+```
+Aqui esperamos o retorno do index.html
 
 ---
 
